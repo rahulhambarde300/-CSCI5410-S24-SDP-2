@@ -11,6 +11,11 @@ export const handler = async(event) => {
     if(!userId || !userName || !email){
         return {
             statusCode: 400,
+            headers: {
+                "Access-Control-Allow-Headers" : "Content-Type",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,POST"
+            },
             body: JSON.stringify({message: "Please pass all the fields"})
         };
     }
@@ -72,6 +77,11 @@ export const handler = async(event) => {
 
         return {
             statusCode: 201,
+            headers: {
+                "Access-Control-Allow-Headers" : "Content-Type",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,POST"
+            },
             body: JSON.stringify({message: "Email sent successfully!", details: message})
         };
     }
@@ -79,6 +89,11 @@ export const handler = async(event) => {
         console.error(error);
         return {
             statusCode: 500,
+            headers: {
+                "Access-Control-Allow-Headers" : "Content-Type",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,POST"
+            },
             body: JSON.stringify({message: "Failed to send email."})
         };
     }

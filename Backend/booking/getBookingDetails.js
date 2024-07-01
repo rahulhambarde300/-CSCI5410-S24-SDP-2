@@ -9,6 +9,11 @@ export const handler = async(event) => {
     if(!bookingId){
         return {
             statusCode:400,
+            headers: {
+                "Access-Control-Allow-Headers" : "Content-Type",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+            },
             body: JSON.stringify({message: "Booking ID is required"})
         }
     }
@@ -41,6 +46,11 @@ export const handler = async(event) => {
 
         return {
             statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Headers" : "Content-Type",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+            },
             body: JSON.stringify({message: "Booking found", details: bookingDetails})
         }
     }
@@ -48,6 +58,11 @@ export const handler = async(event) => {
         console.error(error);
         return {
             statusCode: 500,
+            headers: {
+                "Access-Control-Allow-Headers" : "Content-Type",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+            },
             body: JSON.stringify({message: 'Error while retrieving the booking details.'})
         };
     }
