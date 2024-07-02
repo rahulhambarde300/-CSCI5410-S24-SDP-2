@@ -3,6 +3,8 @@ import { Header } from './components/Header';
 import RoomBookingNotistack from './components/booking/RoomBooking';
 import Home from './components/home/Home.jsx';
 import Chatbot from './components/chatbot/ChatBot';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -14,6 +16,7 @@ function App() {
           <Route path="/booking" element={<RoomBookingNotistack />} />
           <Route path="/chatbot" element={<Chatbot />} />
         </Routes>
+        <ToastContainer/>
       </div>
     </Router>
   );
