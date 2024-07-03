@@ -36,7 +36,7 @@ export const Header = () => {
                 Login
               </Link>
               <div className='border-l-2 border-solid border-blue-300 h-6'></div>
-              <Link to="/register" className='text-lg text-white cursor-pointer hover:underline transform hover:scale-105 transition duration-200'>
+              <Link to="/signup" className='text-lg text-white cursor-pointer hover:underline transform hover:scale-105 transition duration-200'>
                 Register
               </Link>
             </>
