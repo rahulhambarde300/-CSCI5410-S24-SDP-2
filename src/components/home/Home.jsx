@@ -1,8 +1,26 @@
+import React, { useContext, useEffect } from 'react';
+import { AuthContext } from '../../context/AuthContext';
+import {useNavigate } from 'react-router-dom';
 import { FaHotel, FaUserFriends, FaComments, FaCloud, FaEnvelope } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 
 
+
 const Home = () => {
+  const { user, logout } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    // // If user is not logged in --> Redirect to /login
+    // useEffect(() => {
+    //     if (!user) {
+    //         navigate("/login");
+    //     }
+    // }, [user, navigate]);
+
+    // Component is mounted
+    useEffect(()=>{
+        console.log("Dashboard Component")
+    },[])
   return (
     <div className="bg-gradient-to-b from-blue-200 to-blue-400 min-h-screen flex flex-col justify-center items-center">
       <div className="max-w-4xl px-4 py-8 bg-white shadow-lg rounded-lg">
