@@ -26,6 +26,7 @@ function App() {
                   <Route path="/booking" element={<RoomBookingNotistack />} />
                   <Route path="/chatbot" element={<Chatbot />} />
                 </Routes>
+                <ToastContainer/>
               </div>
           </Router>
         </AuthProvider>
