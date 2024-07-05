@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useState } from 'react';
 import { CognitoUserPool, AuthenticationDetails, CognitoUser, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import axios from 'axios';
 import { clientId, userPoolId } from '../config';
-import { USER_SIGNUP, VERIFY_USER } from '../API_URL';
+import { USER_SIGNUP, VERIFY_USER } from '../API_URL';;
 
 export const AuthContext = createContext();
 
@@ -44,8 +44,18 @@ export const AuthProvider = ({ children }) => {
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (result) => {
         const accessToken = result.getAccessToken().getJwtToken();
-        setUser({ email: userData.email, token: accessToken });
-        localStorage.setItem('user', JSON.stringify({ email: userData.email, token: accessToken }));
+        const idToken = result.getIdToken().getJwtToken();
+
+        // Decode the ID token to get the userId
+        const base64Url = idToken.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const decodedData = JSON.parse(atob(base64));
+        const userId = decodedData.sub;
+        console.log("User id", userId);
+
+
+        setUser({ email: userData.email, userId: userId, token: accessToken });
+        localStorage.setItem('user', JSON.stringify({ email: userData.email, userId: userId, token: accessToken }));
         setSuccessMessage("Login Successful...Redirecting to the Dashboard");
         setTimeout(() => {
           setSuccessMessage(false);

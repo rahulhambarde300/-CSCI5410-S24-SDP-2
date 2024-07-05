@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
+
 import { Container, Typography, TextField, Button, Select, MenuItem, FormControl, InputLabel, Grid, Paper, TableContainer
 } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -15,10 +17,11 @@ import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 
-const sqsClient = new SQSClient({ region: 'us-east-1' }); 
-
 const RoomBooking = () => {
   const API_GATEWAY_URL = 'https://2zhi4uaze6.execute-api.us-east-1.amazonaws.com/prod/';
+
+  const storedUser = localStorage.getItem('user');
+  const user = JSON.parse(storedUser);
 
   const [selectedRoom, setSelectedRoom] = useState('');
   const [startDate, setStartDate] = useState(null);
@@ -40,8 +43,7 @@ const RoomBooking = () => {
 
   const getBookings = () => {
     //Get all bookings from getAllBookings lambda function
-    //TODO: Change userId to dynamic after authentication module
-    const userId = 'rahul1';
+    const userId = user.userId;
     axios.post(`${API_GATEWAY_URL}bookings/getBookings`, {
       userId: userId
     })
@@ -69,8 +71,7 @@ const RoomBooking = () => {
         
         //Add request in SQS using lambda function
 
-        //TODO: Change userId to dynamic after authentication module
-        const userId = 'rahul1';
+        const userId = user.userId;
         const message = {
           userId: userId,
           roomId: selectedRoom,
@@ -94,8 +95,7 @@ const RoomBooking = () => {
 
   const deleteBooking = (bookingId) => {
     //Delete a booking using deleteBooking lambda function
-    //TODO: Change userId to dynamic after authentication module
-    const userId = 'rahul1';
+    const userId = user.userId;
     axios.post(`${API_GATEWAY_URL}bookings/deleteBooking`, {
       userId: userId,
       bookingId: bookingId

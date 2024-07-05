@@ -1,6 +1,5 @@
 import { DynamoDBClient, PutItemCommand, QueryCommand } from "@aws-sdk/client-dynamodb";
 import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
-import { v4 as uuidv4 } from 'uuid';
 
 const dynamoDb = new DynamoDBClient({ region: "us-east-1" });
 const sns = new SNSClient({ region: "us-east-1" });
@@ -45,7 +44,7 @@ export const handler = async (event) => {
                 continue;
             }
 
-            const bookingId = uuidv4();
+            const bookingId = generateId();
             const bookingParams = {
                 TableName: 'Bookings',
                 Item: {
@@ -107,3 +106,14 @@ export const handler = async (event) => {
         body: JSON.stringify({ message: "Processing complete" }),
     };
 };
+
+function generateId() {
+    const idLength = 6;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let id = '';
+
+    for (let i = 0; i < idLength; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
+}
