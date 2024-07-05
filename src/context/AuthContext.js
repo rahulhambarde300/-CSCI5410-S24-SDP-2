@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(false);
+  const [authCompleted, setAuthCompleted] = useState(false);
 
   const poolData = {
     UserPoolId: userPoolId,
@@ -56,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 
         setUser({ email: userData.email, userId: userId, token: accessToken });
         localStorage.setItem('user', JSON.stringify({ email: userData.email, userId: userId, token: accessToken }));
-        setSuccessMessage("Login Successful...Redirecting to the Dashboard");
+        setSuccessMessage("Login Successful...Redirecting");
         setTimeout(() => {
           setSuccessMessage(false);
         }, 3000);
@@ -99,11 +100,11 @@ export const AuthProvider = ({ children }) => {
         });
 
         if (response.status === 200) {
-          setSuccessMessage(true);
-          await axios.post(VERIFY_USER, { email: formData.email });
+          setSuccessMessage("User Registered Successfully");
           setTimeout(() => {
             setSuccessMessage(false);
-          }, 2000);
+          }, 1000);
+          await axios.post(VERIFY_USER, { email: formData.email });
         }
       });
     } catch (error) {
@@ -116,11 +117,12 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
+    setAuthCompleted(false)
     localStorage.removeItem('user');
   };
 
   return (
-    <AuthContext.Provider value={{ user, loginUserCred, logout, signUp, error, loading, successMessage }}>
+    <AuthContext.Provider value={{ authCompleted, setAuthCompleted ,user, loginUserCred, logout, signUp, error, loading, successMessage }}>
       {children}
     </AuthContext.Provider>
   );

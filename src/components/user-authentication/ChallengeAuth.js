@@ -21,13 +21,13 @@ const ChallengeAuth = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [severity, setSeverity] = useState("success");
-  const { user } = useContext(AuthContext);
+  const { user, setAuthCompleted } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const fetchCipherChallenge = async () => {
     try {
       const response = await axios.get(FETCH_CIPHER_CHALLENGE, {
-        params: { email: user.email }
+        params: { userId: user.userId }
       });
       setCipher(response.data);
     } catch (error) {
@@ -48,7 +48,7 @@ const ChallengeAuth = () => {
     e.preventDefault();
     try {
       const response = await axios.post(VERIFY_CIPHER_CHALLENGE, {
-        email: user.email,
+        userId: user.userId,
         answer: userAnswer
       });
 
@@ -56,13 +56,14 @@ const ChallengeAuth = () => {
         setMessage('Cipher challenge answered correctly!');
         setSeverity('success');
         setOpen(true);
+        setAuthCompleted(true);
         setTimeout(() => {
           navigate('/');
         }, 3000);
-      } else {
-        
+
       }
     } catch (error) {
+      console.log("error", error);
         if(error.response.status === 400){
             setMessage('Incorrect answers for the cipher challenge.');
         setSeverity('error');

@@ -7,10 +7,10 @@ table = dynamodb.Table('users')
 def lambda_handler(event, context):
     print(json.dumps(event))
     body = json.loads(event['body'])
-    user_email = body['email']
+    user_id = body['userId']
 
     response = table.get_item(
-        Key={'email': user_email}
+        Key={'userId': user_id}
     )
     
     if 'Item' in response:

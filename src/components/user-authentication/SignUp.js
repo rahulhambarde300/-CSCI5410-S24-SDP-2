@@ -2,7 +2,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import { TextField, Button, Container, Grid, Typography, Box, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import { TextField, Button, Container, Grid, Typography, Box, MenuItem, Select, FormControl, InputLabel, Snackbar } from "@mui/material";
+import MuiAlert from '@mui/material/Alert';
 
 const securityQuestions = [
   "What was your childhood nickname?",
@@ -29,6 +30,9 @@ const SignUp = () => {
   const [errors, setErrors] = useState(formData);
   const { signUp, error, loading, successMessage } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [severity, setSeverity] = useState("success");
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -41,6 +45,18 @@ const SignUp = () => {
       ...errors,
       [name]: "",
     });
+  };
+
+  useEffect(() => {
+    if (error) {
+      setMessage(error);
+      setSeverity("error");
+      setOpen(true);
+    }
+  }, [error]);
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   const handleSecurityQuestionChange = (index) => (event) => {
@@ -105,8 +121,12 @@ const SignUp = () => {
       await signUp({ ...formData}); 
     }
   };
+
   useEffect(()=>{
     if(successMessage){
+      setMessage(successMessage);
+      setSeverity("success");
+      setOpen(true);
       setTimeout(() => {
         setFormData({
           firstName: "",
@@ -236,16 +256,11 @@ const SignUp = () => {
             {loading ? 'Loading...' : 'Register'}
           </Button>
         </form>
-        {successMessage && (
-          <Typography color="success" align="center" sx={{ mt: 2 }}>
-            Registration Successful...Redirecting to the Login Page
-          </Typography>
-        )}
-        {error && (
-          <Typography color="error" align="center" sx={{ mt: 2 }}>
-            {error}
-          </Typography>
-        )}
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+        <MuiAlert elevation={6} variant="filled" onClose={handleClose} severity={severity}>
+          {message}
+        </MuiAlert>
+      </Snackbar>
       </Container>
     </Box>
   );

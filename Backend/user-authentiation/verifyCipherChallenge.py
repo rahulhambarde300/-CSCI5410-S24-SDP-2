@@ -7,10 +7,10 @@ table = dynamodb.Table('users')
 
 def lambda_handler(event, context):
     data = json.loads(event['body'])
-    email = data['email']
+    user_id = data['userId']
     user_answer = data['answer']
     
-    response = table.get_item(Key={'email': email})
+    response = table.get_item(Key={'userId': user_id})
     item = response.get('Item', {})
     
     if not item:
@@ -24,7 +24,7 @@ def lambda_handler(event, context):
     if hashed_user_answer == item['hashed_answer']:
         return {
             'statusCode': 200,
-            'body': json.dumps({'success': True, 'username': email})
+            'body': json.dumps({'success': True})
         }
     else:
         return {
