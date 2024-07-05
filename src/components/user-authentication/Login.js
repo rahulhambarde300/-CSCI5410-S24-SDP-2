@@ -30,18 +30,16 @@ const Login = () => {
       setMessage(successMessage);
       setSeverity("success");
       setOpen(true);
+      setTimeout(() => {
+        setFormData({ email: "", password: "" });
+        navigate("/security-questions");
+      }, 3000);
     }
   }, [successMessage]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     await loginUserCred({ ...formData });
-    if (!error) {
-      setTimeout(() => {
-        setFormData({ email: "", password: "" });
-        navigate("/security-questions");
-      }, 3000);
-    }
   };
 
   const handleClose = () => {

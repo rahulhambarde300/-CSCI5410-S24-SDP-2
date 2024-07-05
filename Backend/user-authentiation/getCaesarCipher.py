@@ -17,7 +17,7 @@ def generate_caesar_cipher(text, shift):
     return result
 
 def lambda_handler(event, context):
-    email = event['queryStringParameters']['email']
+    user_id = event['queryStringParameters']['userId']
     
     shift = random.randint(1, 7)
     alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -27,7 +27,7 @@ def lambda_handler(event, context):
     hashed_answer = hashlib.sha256(plaintext.encode()).hexdigest()
     
     response = table.update_item(
-        Key={'email': email},
+        Key={'userId': user_id},
         UpdateExpression="set cipher = :c,hashed_answer = :h",
         ExpressionAttributeValues={
             ':c': cipher_text,

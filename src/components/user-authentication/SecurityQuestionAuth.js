@@ -26,7 +26,7 @@ const SecurityQuestionAuth = () => {
 
   const fetchQuestions = async () => {
     try {
-      const response = await axios.post(FETCH_SECURITY_QUESTIONS, { email: user.email });
+      const response = await axios.post(FETCH_SECURITY_QUESTIONS, { userId: user.userId });
       setQuestions(response.data);
     } catch (error) {
         setMessage('Failed to fetch security questions');
@@ -56,7 +56,7 @@ const SecurityQuestionAuth = () => {
     e.preventDefault();
     try {
       const response = await axios.post(VERIFY_SECURITY_QUESTIONS, {
-        email: user.email,
+        userId: user.userId,
         answers: Object.values(answers)
       });
 
