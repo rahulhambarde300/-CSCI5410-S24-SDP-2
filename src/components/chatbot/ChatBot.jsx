@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {  useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -15,8 +15,15 @@ import axios from "axios";
 const ChatBot = () => {
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState([]);
+  const [userId, setUserId] = useState("Guest");
   const chatContentRef = useRef(null);
-
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const user = JSON.parse(storedUser);
+    if (user?.userId) {
+      setUserId(user.userId);
+    }
+  }, []);
   const sendMessage = async () => {
     if (message.trim() !== "") {
       const updatedChat = [...chat, { user: true, text: message }];
@@ -24,6 +31,7 @@ const ChatBot = () => {
       try {
         const response = await axios.post(`https://qvtmdb2uy4.execute-api.us-east-1.amazonaws.com/Development/send`, {
           text: message,
+          user: userId
         });
         setChat([...updatedChat, { user: false, text: response.data.body }]);
       } catch (error) {
