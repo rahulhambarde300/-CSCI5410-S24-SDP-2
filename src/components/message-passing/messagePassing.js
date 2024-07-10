@@ -9,20 +9,7 @@ const MessagePassing = () => {
   const [bookingReference, setBookingReference] = useState('');
   const [chatVisible, setChatVisible] = useState(false);
   const [agentAssigned, setAgentAssigned] = useState(false);
-  const [ticketId, setTicketId] = useState('');
-
-  const receiverResponses = [
-    'Hello! How can I help you?',
-    'Sure, I can assist with that.',
-    'Please wait a moment.',
-    'I will get back to you shortly.',
-    'Thank you for your patience.',
-    'Can you please provide more details?',
-    'I understand. Let me check on that.',
-    'Thank you for reaching out.',
-    'Is there anything else I can help with?',
-    'Goodbye!'
-  ];
+  const [agentID, setAgent] = useState('');
 
   useEffect(() => {
     const user = localStorage.getItem('user');
@@ -39,19 +26,66 @@ const MessagePassing = () => {
     return `${datePart}${randomPart}`;
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (newMessage.trim() !== '') {
       const userMessage = { text: newMessage, timestamp: new Date(), sender: 'user' };
-      setMessages([...messages, userMessage]);
-
       setNewMessage('');
+      await storeMessage(userMessage);
+      fetchAgentResponseMessages();
+      setInterval(() => {
+        fetchAgentResponseMessages();
+      }, 3000);
+    }
+  };
 
-      // Simulate receiver response
-      setTimeout(() => {
-        const randomResponse = receiverResponses[Math.floor(Math.random() * receiverResponses.length)];
-        const receiverMessage = { text: randomResponse, timestamp: new Date(), sender: 'receiver' };
-        setMessages(prevMessages => [...prevMessages, receiverMessage]);
-      }, 1000); // Delay the response by 1 second
+  const storeMessage = async (message) => {
+    const messageData = {
+      bookingReference,
+      customer_id: userId,
+      agent_id: agentID,
+      message: message.text,
+      sender_number: '1',
+    };
+
+    try {
+      const response = await fetch('https://us-central1-csci5410-427115.cloudfunctions.net/storingMessages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(messageData),
+      });
+
+      if (response.ok) {
+        console.log('Message stored successfully');
+      } else {
+        console.log('Failed to store message');
+      }
+    } catch (error) {
+      console.error('Error storing message:', error);
+    }
+  };
+
+  const fetchAgentResponseMessages = async () => {
+    console.log(bookingReference);
+    try {
+      const response = await fetch(`https://us-central1-csci5410-427115.cloudfunctions.net/agentresponsebybookingreference?bookingReference=${bookingReference}`);
+      if (response.ok) {
+        const responseData = await response.json();
+        console.log('Agent response:', responseData);
+
+        if (responseData.messages && responseData.messages.length > 0) {
+          const agentMessages = responseData.messages.map((msg) => ({
+            text: msg.message,
+            sender: msg.sender_number === '1' ? 'user' : 'receiver',
+          }));
+          setMessages(agentMessages);
+        }
+      } else {
+        console.log('Failed to fetch agent messages');
+      }
+    } catch (error) {
+      console.error('Error fetching agent messages:', error);
     }
   };
 
@@ -86,10 +120,7 @@ const MessagePassing = () => {
       if (response.ok) {
         console.log('Message sent successfully');
         setConcern('');
-        setBookingReference('');
         setChatVisible(true);
-
-        // Fetch booking reference details after 3 seconds
         setTimeout(() => {
           fetchBookingReferenceDetails();
         }, 3000);
@@ -108,18 +139,18 @@ const MessagePassing = () => {
         const data = await response.json();
         console.log('Booking reference details:', data);
 
-        // Display message about agent assignment and ticket ID
         setAgentAssigned(true);
 
-        // Update messages to reflect agent assignment
-        data.forEach(item => {
+        if (data.length > 0) {
+          const item = data[0];
           const agentAssignmentMessage = {
             text: `You have been assigned an agent. Agent ID: ${item.agent_id}, Ticket ID: ${item.ticket_id}`,
             timestamp: new Date(),
-            sender: 'system'
+            sender: 'system',
           };
-          setMessages(prevMessages => [...prevMessages, agentAssignmentMessage]);
-        });
+          setMessages([agentAssignmentMessage]);
+          setAgent(item.agent_id);
+        }
       } else {
         console.log('Failed to fetch booking reference details');
       }
@@ -158,7 +189,6 @@ const MessagePassing = () => {
           messages.map((message, index) => (
             <div key={index} className={`chat-message ${message.sender}`}>
               <span>{message.text}</span>
-              <span className="timestamp">{message.timestamp.toLocaleTimeString()}</span>
             </div>
           ))
         ) : (

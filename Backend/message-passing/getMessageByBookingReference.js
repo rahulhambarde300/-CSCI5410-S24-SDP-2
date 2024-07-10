@@ -2,7 +2,7 @@ const functions = require('@google-cloud/functions-framework');
 const { Firestore } = require('@google-cloud/firestore');
 
 const firestore = new Firestore({
-  projectId: 'csci5410-427115', // Replace with your actual project ID
+  projectId: 'csci5410-427115', 
   databaseId: 'csci5410'
 });
 
