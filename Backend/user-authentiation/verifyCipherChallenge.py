@@ -24,7 +24,7 @@ def lambda_handler(event, context):
     if hashed_user_answer == item['hashed_answer']:
         return {
             'statusCode': 200,
-            'body': json.dumps({'success': True})
+            'body': json.dumps({'success': True, 'user_role': item['user_role']})
         }
     else:
         return {
