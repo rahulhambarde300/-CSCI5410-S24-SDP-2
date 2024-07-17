@@ -2,7 +2,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import { TextField, Button, Container, Grid, Typography, Box, MenuItem, Select, FormControl, InputLabel, Snackbar } from "@mui/material";
+import { TextField, Button, Container, Grid, Typography, Box, MenuItem, Select, FormControl, InputLabel, Snackbar, FormControlLabel, Checkbox } from "@mui/material";
 import MuiAlert from '@mui/material/Alert';
 
 const securityQuestions = [
@@ -26,6 +26,7 @@ const SignUp = () => {
     securityQuestions: ["", "", ""],
     securityAnswers: ["", "", ""],
   });
+  const [isPropertyAgent, setIsPropertyAgent] = useState(false);
 
   const [errors, setErrors] = useState(formData);
   const { signUp, error, loading, successMessage } = useContext(AuthContext);
@@ -118,7 +119,7 @@ const SignUp = () => {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
-      await signUp({ ...formData}); 
+      await signUp({ ...formData, user_role: isPropertyAgent ? 'property_agent' : 'user' }); 
     }
   };
 
@@ -223,6 +224,7 @@ const SignUp = () => {
               />
             </Grid>
             <Grid item xs={12} md={6}>
+            <FormControlLabel control={<Checkbox onChange={() => setIsPropertyAgent(!isPropertyAgent)} />} label="Property Agent" />
               <Typography variant="h6">Security Questions</Typography>
               {formData.securityQuestions.map((question, index) => (
                 <div key={index}>

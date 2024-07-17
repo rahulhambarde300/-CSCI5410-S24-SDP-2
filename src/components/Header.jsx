@@ -17,7 +17,7 @@ export const Header = () => {
         </Link>
 
         <div className='flex items-center space-x-6'>
-          {user ? (
+          {user?.authCompleted ? (
             <>
               <div className='text-lg text-white'>
                 Hello, {user?.email}

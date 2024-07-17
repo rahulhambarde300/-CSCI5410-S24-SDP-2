@@ -21,7 +21,7 @@ const ChallengeAuth = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [severity, setSeverity] = useState("success");
-  const { user, setAuthCompleted } = useContext(AuthContext);
+  const { user, setAuthCompleted, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const fetchCipherChallenge = async () => {
@@ -57,6 +57,13 @@ const ChallengeAuth = () => {
         setSeverity('success');
         setOpen(true);
         setAuthCompleted(true);
+        setUser((prevState) => ({
+          ...prevState,
+          user_role: response.data.user_role,
+          authCompleted: true
+        }))
+        const currentUser = JSON.parse(localStorage.getItem('user'))
+        localStorage.setItem('user', JSON.stringify({ ...currentUser, user_role: response.data.user_role, authCompleted: true }));
         setTimeout(() => {
           navigate('/');
         }, 3000);
