@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
     console.log("USER ---->", userPresent)
     if(userPresent){
       setUser(JSON.parse(userPresent))
+      setAuthCompleted(JSON.parse(userPresent)?.authCompleted)
     }
   },[])
   const loginUserCred = async (userData) => {
@@ -51,12 +52,13 @@ export const AuthProvider = ({ children }) => {
         const base64Url = idToken.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         const decodedData = JSON.parse(atob(base64));
+        console.log(decodedData);
         const userId = decodedData.sub;
         console.log("User id", userId);
 
 
         setUser({ email: userData.email, userId: userId, token: accessToken });
-        localStorage.setItem('user', JSON.stringify({ email: userData.email, userId: userId, token: accessToken }));
+        localStorage.setItem('user', JSON.stringify({ email: userData.email, userId: userId, token: accessToken, user_role: null, authCompleted: false }));
         setSuccessMessage("Login Successful...Redirecting");
         setTimeout(() => {
           setSuccessMessage(false);
@@ -97,6 +99,7 @@ export const AuthProvider = ({ children }) => {
             question: question,
             answer: formData.securityAnswers[index],
           })),
+          user_role: formData.user_role
         });
 
         if (response.status === 200) {
@@ -122,7 +125,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ authCompleted, setAuthCompleted ,user, loginUserCred, logout, signUp, error, loading, successMessage }}>
+    <AuthContext.Provider value={{ authCompleted, setAuthCompleted, setUser ,user, loginUserCred, logout, signUp, error, loading, successMessage }}>
       {children}
     </AuthContext.Provider>
   );
