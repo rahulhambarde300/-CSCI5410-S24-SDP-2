@@ -15,6 +15,7 @@ def lambda_handler(event, context):
     phone_number = body['phoneNumber']
     email = body['email']
     security_questions = body['securityQuestions']
+    user_role = body['user_role']
 
     # Hash the security answers
     hashed_security_questions = [
@@ -34,7 +35,8 @@ def lambda_handler(event, context):
             'lastName': last_name,
             'phoneNumber': phone_number,
             'email': email,
-            'securityQuestions': hashed_security_questions
+            'securityQuestions': hashed_security_questions,
+            'user_role': user_role
           }
        )
 
