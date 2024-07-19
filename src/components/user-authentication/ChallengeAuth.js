@@ -12,7 +12,8 @@ import {
   Snackbar
 } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
-import { FETCH_CIPHER_CHALLENGE, VERIFY_CIPHER_CHALLENGE } from '../../API_URL';
+import { FETCH_CIPHER_CHALLENGE, VERIFY_CIPHER_CHALLENGE, NOTIFICATIONS_API_URL } from '../../API_URL';
+
 
 const ChallengeAuth = () => {
   const [cipher, setCipher] = useState({ challenge: '', key: '' });
@@ -56,7 +57,7 @@ const ChallengeAuth = () => {
         setMessage('Cipher challenge answered correctly!');
         setSeverity('success');
         setOpen(true);
-        setAuthCompleted(true);
+        setAuthCompleted(true); 
         setUser((prevState) => ({
           ...prevState,
           user_role: response.data.user_role,
@@ -64,6 +65,7 @@ const ChallengeAuth = () => {
         }))
         const currentUser = JSON.parse(localStorage.getItem('user'))
         localStorage.setItem('user', JSON.stringify({ ...currentUser, user_role: response.data.user_role, authCompleted: true }));
+        sendLoginNotification(currentUser);
         setTimeout(() => {
           navigate('/');
         }, 3000);
@@ -87,6 +89,11 @@ const ChallengeAuth = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const sendLoginNotification = async(currentUser) => {
+    const data = {userId: currentUser.userId, email: currentUser.email};
+    await axios.post(`${NOTIFICATIONS_API_URL}/login`, data);
+  }
 
   if (loading) {
     return <CircularProgress />;

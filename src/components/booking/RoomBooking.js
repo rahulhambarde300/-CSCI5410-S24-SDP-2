@@ -15,7 +15,6 @@ import TableRow from '@mui/material/TableRow';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
-import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 
 const RoomBooking = () => {
   const API_GATEWAY_URL = 'https://2zhi4uaze6.execute-api.us-east-1.amazonaws.com/prod/';

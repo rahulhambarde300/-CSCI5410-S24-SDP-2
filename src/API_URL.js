@@ -9,3 +9,5 @@ export const VERIFY_CIPHER_CHALLENGE = "https://ltufwwur437exp4bt2haaiopc40peicb
 export const USER_SIGNUP = "https://rr67mh7ynof3cju6owi43ywuqa0ossga.lambda-url.us-east-1.on.aws/"
 
 export const VERIFY_USER = "https://t5fqeg74ev2ajftoz2n4wnolxa0ajhsp.lambda-url.us-east-1.on.aws/"
+
+export const NOTIFICATIONS_API_URL = "https://2zhi4uaze6.execute-api.us-east-1.amazonaws.com/prod/notifications";

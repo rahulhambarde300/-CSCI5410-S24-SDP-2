@@ -5,9 +5,9 @@ const sns = new SNSClient({ region: "us-east-1" });
 const topicArn = 'arn:aws:sns:us-east-1:960148008907:Login';
 
 export const handler = async(event) => {
-    const {userId, userName, email} = JSON.parse(event.body);
+    const {userId, email} = JSON.parse(event.body);
 
-    if(!userId || !userName || !email){
+    if(!userId || !email){
         return {
             statusCode: 400,
             headers: {
@@ -21,10 +21,10 @@ export const handler = async(event) => {
 
     const subject = "Welcome to DalVacationHome!";
     const currentDate = new Date();
-    const message = `Hi ${userName},
+    const message = `Hello User,
     
-    You have recently logged in to DalVacationHome at ${currentDate}
-    `
+    You have recently logged in to DalVacationHome at ${currentDate}.
+    `;
     try{
 
         await sns.send(new PublishCommand({
