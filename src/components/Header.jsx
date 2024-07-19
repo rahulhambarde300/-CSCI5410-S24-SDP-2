@@ -9,12 +9,17 @@ export const Header = () => {
   return (
     <header className='sticky top-0 z-50 w-full bg-blue-600 shadow-xl border-b border-blue-700'>
       <nav className='flex justify-between items-center py-4 px-6'>
+        <div className='flex items-start text-white'>
         <Link to="/">
           <div className='flex items-center text-white'>
             <FaHotel className="w-8 h-8 mr-2 text-white" />
             <p className='text-2xl font-bold'>DalVacationHome</p>
           </div>
         </Link>
+        <Link to="/feedbacks" className="text-white text-lg font-bold ml-3">
+            Feedbacks
+        </Link>
+        </div>
 
         <div className='flex items-center space-x-6'>
           {user?.authCompleted ? (

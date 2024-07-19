@@ -13,6 +13,8 @@ import AgentTicketInfo from './components/message-passing/agentTicketInfo.js';
 import Chat from './components/message-passing/chat.js';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SubmitFeedback from './components/feedback/SubmitFeedback.js';
+import Feedbacks from './components/feedback/Feedbacks.js';
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
             <Route path="/livechat" element={<MessagePassing />} />
             <Route path="/tickets" element={<AgentTicketInfo />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/feedback/add" element={<SubmitFeedback />} />
+            <Route path="/feedbacks" element={<Feedbacks />} />
           </Routes>
           <ToastContainer />
         </div>
