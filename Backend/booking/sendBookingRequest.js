@@ -3,9 +3,9 @@ import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
 const sqs = new SQSClient({ region: "us-east-1" });
 
 export const handler = async (event) => {
-    const { userId, roomId, startDate, endDate } = JSON.parse(event.body);
+    const { userId, roomId, roomName, startDate, endDate } = JSON.parse(event.body);
 
-    if (!userId || !roomId || !startDate || !endDate) {
+    if (!userId || !roomId || !roomName || !startDate || !endDate) {
         return {
             statusCode: 400,
              headers: {
@@ -20,6 +20,7 @@ export const handler = async (event) => {
     const message = {
         userId,
         roomId,
+        roomName,
         startDate,
         endDate,
     };

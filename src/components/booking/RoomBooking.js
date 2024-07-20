@@ -15,7 +15,6 @@ import TableRow from '@mui/material/TableRow';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
-import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { useNavigate } from 'react-router-dom';
 
 const RoomBooking = () => {

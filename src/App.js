@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { Header } from './components/Header';
 import Login from './components/user-authentication/Login';
@@ -6,6 +7,10 @@ import SignUp from './components/user-authentication/SignUp';
 import SecurityQuestionAuth from './components/user-authentication/SecurityQuestionAuth';
 import ChallengeAuth from './components/user-authentication/ChallengeAuth';
 import RoomBookingNotistack from './components/booking/RoomBooking';
+import BookingPage from './components/booking/BookingPage.js';
+import ListingPage from './components/booking/ListingPage.js';
+import ManageRoom from './components/booking/ManageRoom.js';
+import IndividualListing from './components/booking/IndividualListing.js';
 import Home from './components/home/Home.jsx';
 import Chatbot from './components/chatbot/ChatBot';
 import MessagePassing from './components/message-passing/messagePassing.js';
@@ -17,6 +22,12 @@ import SubmitFeedback from './components/feedback/SubmitFeedback.js';
 import Feedbacks from './components/feedback/Feedbacks.js';
 
 function App() {
+  const [selectedRoom, setSelectedRoom] = useState(null);
+
+  function handleRoomSelect(room){
+    setSelectedRoom(room);
+  };
+
   return (
     <AuthProvider>
       <Router>
@@ -28,7 +39,9 @@ function App() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/security-questions" element={<SecurityQuestionAuth />} />
             <Route path="/human-challenge" element={<ChallengeAuth />} />
-            <Route path="/booking" element={<RoomBookingNotistack />} />
+            <Route path="/manageRoom" element={<ManageRoom/>} />
+            <Route path="/listing" element={<ListingPage handleRoomSelect={handleRoomSelect}/>} />
+            <Route path="/listing/:id" element={<IndividualListing room={selectedRoom} />}/>
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/livechat" element={<MessagePassing />} />
             <Route path="/tickets" element={<AgentTicketInfo />} />

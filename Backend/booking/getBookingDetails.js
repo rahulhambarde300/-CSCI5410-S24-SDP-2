@@ -39,6 +39,7 @@ export const handler = async(event) => {
             bookingId: Item.bookingId.S,
             userId: Item.userId.S,
             roomId: Item.roomId.S,
+            roomName: Item.roomName.S,
             startDate: Item.startDate.S,
             endDate: Item.endDate.S,
             status: Item.status.S,
