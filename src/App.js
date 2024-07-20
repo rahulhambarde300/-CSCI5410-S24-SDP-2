@@ -6,8 +6,6 @@ import Login from './components/user-authentication/Login';
 import SignUp from './components/user-authentication/SignUp';
 import SecurityQuestionAuth from './components/user-authentication/SecurityQuestionAuth';
 import ChallengeAuth from './components/user-authentication/ChallengeAuth';
-import RoomBookingNotistack from './components/booking/RoomBooking';
-import BookingPage from './components/booking/BookingPage.js';
 import ListingPage from './components/booking/ListingPage.js';
 import ManageRoom from './components/booking/ManageRoom.js';
 import IndividualListing from './components/booking/IndividualListing.js';
