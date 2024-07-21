@@ -123,7 +123,7 @@ const MessagePassing = () => {
         setChatVisible(true);
         setTimeout(() => {
           fetchBookingReferenceDetails();
-        }, 3000);
+        }, 5000);
       } else {
         console.log('Failed to send message');
       }
@@ -210,7 +210,7 @@ const MessagePassing = () => {
 
       {agentAssigned && (
         <div className="agent-assigned-message">
-          <p>You have been assigned an agent.</p>
+          <p>You have been assigned an agent. <br/> KINDLY SEND A MESSAGE TO START CONVERSATION </p>
         </div>
       )}
     </div>

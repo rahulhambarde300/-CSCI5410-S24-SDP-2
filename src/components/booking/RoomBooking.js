@@ -15,13 +15,14 @@ import TableRow from '@mui/material/TableRow';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
-import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
+import { useNavigate } from 'react-router-dom';
 
 const RoomBooking = () => {
   const API_GATEWAY_URL = 'https://2zhi4uaze6.execute-api.us-east-1.amazonaws.com/prod/';
 
   const storedUser = localStorage.getItem('user');
   const user = JSON.parse(storedUser);
+  const navigate = useNavigate();
 
   const [selectedRoom, setSelectedRoom] = useState('');
   const [startDate, setStartDate] = useState(null);
@@ -198,6 +199,16 @@ const RoomBooking = () => {
         </TableBody>
       </Table>
       </Paper>
+      {user?.user_role === "user" && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => navigate(`/feedback/add`)}
+                      sx={{ mt: 2, ml: 2 }}
+                    >
+                      Give Feedback
+                    </Button>
+                  )}
     </Container>
     </>
   );

@@ -1,4 +1,5 @@
-import { DynamoDBClient, ScanCommand, PutItemCommand, UpdateItemCommand, DeleteItemCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, ScanCommand, GetItemCommand , PutItemCommand, UpdateItemCommand, DeleteItemCommand } from "@aws-sdk/client-dynamodb";
+import { randomUUID } from 'crypto';
 
 const client = new DynamoDBClient({ region: "us-east-1" });
 
@@ -15,7 +16,7 @@ export const handler = async (event) => {
     
     switch (event.httpMethod) {
         case "GET":
-            return await getAllRooms();
+            return await roomId ? getRoomDetails(roomId) : getAllRooms();
         case "POST":
             return await addRoom(body);
         case "PUT":
@@ -50,13 +51,41 @@ const getAllRooms = async () => {
     }
 };
 
+const getRoomDetails = async (roomId) => {
+    try {
+        const command = new GetItemCommand({ 
+            TableName: tableName,
+            Key: {
+                roomId: { S: roomId }
+            }
+         });
+        const data = await client.send(command);
+        return {
+            statusCode: 200,
+            headers: headers,
+            body: JSON.stringify(data.Item)
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            statusCode: 500,
+            headers: headers,
+            body: JSON.stringify({ message: error.message })
+        };
+    }
+};
+
 const addRoom = async (body) => {
     try {
-        const { roomId, price, discount } = body;
+        const { name, description, image, price, discount } = body;
+        const roomId = randomUUID();
         const command = new PutItemCommand({
             TableName: tableName,
             Item: {
                 roomId: { S: roomId },
+                name: {S: name},
+                description: {S: description},
+                image: {S: image},
                 price: { N: price.toString() },
                 discount: { N: discount.toString() }
             }
@@ -79,14 +108,24 @@ const addRoom = async (body) => {
 
 const editRoom = async (body) => {
     try {
-        const { roomId, price, discount } = body;
+        const { roomId, name, description, image, price, discount } = body;
         const command = new UpdateItemCommand({
             TableName: tableName,
             Key: {
                 roomId: { S: roomId }
             },
-            UpdateExpression: "set price = :price, discount = :discount",
+            UpdateExpression: "set #name = :name, #description = :description, #image = :image, #price = :price, #discount = :discount",
+            ExpressionAttributeNames: {
+                "#name": "name",
+                "#description": "description",
+                "#image": "image",
+                "#price": "price",
+                "#discount": "discount"
+            },
             ExpressionAttributeValues: {
+                ":name": { S: name },
+                ":description": { S: description },
+                ":image": { S: image },
                 ":price": { N: price.toString() },
                 ":discount": { N: discount.toString() }
             }
