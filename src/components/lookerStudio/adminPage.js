@@ -5,8 +5,8 @@ const AdminPage = () => {
         <div>
             <h1>Admin Dashboard</h1>
             <iframe
-                width="600"
-                height="450"
+                width="95%"
+                height="500"
                 src="https://lookerstudio.google.com/embed/reporting/7f7d8791-d4b5-47ad-8155-d19dcfea9014/page/R6R6D"
                 frameBorder="0"
                 style={{ border: 0 }}
