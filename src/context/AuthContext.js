@@ -44,7 +44,6 @@ export const AuthProvider = ({ children }) => {
 
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: async (result) => {
-        console.log(result)
         const accessToken = result.getAccessToken().getJwtToken();
         const idToken = result.getIdToken().getJwtToken();
 
