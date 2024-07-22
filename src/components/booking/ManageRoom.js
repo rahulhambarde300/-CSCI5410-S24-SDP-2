@@ -23,13 +23,11 @@ const ManageRoom = () => {
     const [errors, setErrors] = React.useState({});
 
     const storedUser = localStorage.getItem('user');
+    const storedRole = localStorage.getItem('userRole') || '';
     let user;
     if(storedUser){
       user = JSON.parse(storedUser);
     }
-
-    
-
 
     useEffect(() => {
       fetchRooms();
@@ -53,7 +51,7 @@ const ManageRoom = () => {
   };
 
   
-  if(!user || user.user_role !== 'property_agent'){
+  if(!user || storedRole !== 'property_agent'){
     return (<Typography variant="h4" 
       color="textSecondary" 
       sx={{mt:'1em', mb:'0.5em', justifyContent:'center', textAlign: 'center'}}>
@@ -176,7 +174,7 @@ const ManageRoom = () => {
     <Container maxWidth="lg" sx={{mt:'1.5em'}}>
       <Grid container spacing={4} sx={{ height: '85vh' }}>
         <Grid item xs={12} md={6} sx={{ height: '100%' }}>
-            <Typography variant="h6" gutterBottom sx={{ position: 'sticky', top: 0, backgroundColor: 'background.paper', zIndex: 1 }}>
+            <Typography variant="h6" gutterBottom sx={{ position: 'sticky', top: 0, backgroundColor: 'background.paper', zIndex: 1, textAlign: 'center' }}>
               Manage Rooms
               <Divider sx={{ marginTop: 2 }} />
             </Typography>
@@ -206,12 +204,11 @@ const ManageRoom = () => {
               ))}
             </List>
         </Grid>
-        <Grid item xs={12} md={6} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Grid item xs={12} md={6} sx={{ display: 'flex', alignItems: 'initial', justifyContent: 'center' }}>
           <Paper elevation={3} sx={{ padding: 2, width: '100%', maxWidth: 500, height: 'fit-content' }}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom sx={{textAlign: 'center'}}>
               {isEditing ? 'Edit Room' : 'Add New Room'}
             </Typography>
-            <Divider sx={{ marginBottom: 2 }} />
             <Box component="form" noValidate autoComplete="off">
               <TextField
                 label="Name"

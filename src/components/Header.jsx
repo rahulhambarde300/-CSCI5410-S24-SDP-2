@@ -47,8 +47,12 @@ export const Header = () => {
               <div className='border-l-2 border-solid border-blue-300 h-6'></div>
               {userRole === 'property_agent' && (
                 <>
+                  <Link to="/manageRoom" className="text-white text-lg ml-3">
+                    Room management
+                  </Link>
+                  <div className='border-l-2 border-solid border-blue-300 h-6'></div>
                   <Link to="/looker" className="text-white text-lg ml-3">
-                    AdminStats
+                    Admin Stats
                   </Link>
                   <div className='border-l-2 border-solid border-blue-300 h-6'></div>
                   <Link to="/tickets" className="text-white text-lg ml-3">
