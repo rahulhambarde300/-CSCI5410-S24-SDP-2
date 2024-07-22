@@ -14,6 +14,7 @@ import Chatbot from './components/chatbot/ChatBot';
 import MessagePassing from './components/message-passing/messagePassing.js';
 import AgentTicketInfo from './components/message-passing/agentTicketInfo.js';
 import Chat from './components/message-passing/chat.js';
+import AdminPage from './components/lookerStudio/adminPage.js'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SubmitFeedback from './components/feedback/SubmitFeedback.js';
@@ -43,7 +44,9 @@ function App() {
             <Route path="/chatbot" element={<Chatbot />} />
             <Route path="/livechat" element={<MessagePassing />} />
             <Route path="/tickets" element={<AgentTicketInfo />} />
+            <Route path="/looker" element={<AdminPage />} />
             <Route path="/chat" element={<Chat />} />
+
             <Route path="/feedback/add" element={<SubmitFeedback />} />
             <Route path="/feedbacks" element={<Feedbacks />} />
           </Routes>

@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     });
 
     cognitoUser.authenticateUser(authenticationDetails, {
-      onSuccess: (result) => {
+      onSuccess: async (result) => {
         const accessToken = result.getAccessToken().getJwtToken();
         const idToken = result.getIdToken().getJwtToken();
 
@@ -56,6 +56,25 @@ export const AuthProvider = ({ children }) => {
         setUser(loggedInUser);
         setAuthCompleted(true);
         localStorage.setItem('user', JSON.stringify(loggedInUser));
+
+        // First API call
+        const firstApiResponse = await axios.get(`https://6f27mgdglhu5putnpshmitx46m0cyyny.lambda-url.us-east-1.on.aws?id=${userId}`);
+        console.log('First API Response:', firstApiResponse.data); // Log the response data
+
+        const userRole = firstApiResponse.data?.user_role;
+        if (userRole) {
+          // Save the userRole in local storage
+          localStorage.setItem('userRole', userRole);
+          console.log('User Role saved to local storage:', userRole);
+        } else {
+          // Save an empty string if userRole does not exist
+          localStorage.setItem('userRole', '');
+          console.log('User Role not found, saved empty string to local storage');
+        }
+        if (userRole && userRole !== 'property_agent') {
+          const secondApiResponse = await axios.post('https://us-central1-csci5410-427115.cloudfunctions.net/logUserLogin', { userId });
+          console.log('Second API Response:', secondApiResponse.data); // Log the response data
+        }
 
         setSuccessMessage("Login Successful...Redirecting");
         setTimeout(() => {
@@ -120,6 +139,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setAuthCompleted(false);
     localStorage.removeItem('user');
+    localStorage.removeItem('userRole');
   };
 
   return (

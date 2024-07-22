@@ -6,9 +6,20 @@ import { AuthContext } from '../context/AuthContext';
 export const Header = () => {
   const { user, logout, authCompleted } = useContext(AuthContext);
   const [isAuthCompleted, setIsAuthCompleted] = useState(authCompleted);
+  const [userRole, setUserRole] = useState('');
 
   useEffect(() => {
     setIsAuthCompleted(authCompleted);
+    if (authCompleted) {
+      // Introduce a delay of 3 seconds before setting the userRole
+      const timeoutId = setTimeout(() => {
+        const storedRole = localStorage.getItem('userRole') || '';
+        setUserRole(storedRole);
+      }, 3000);
+
+      // Cleanup function to clear the timeout if the component unmounts
+      return () => clearTimeout(timeoutId);
+    }
   }, [authCompleted]);
 
   return (
@@ -34,6 +45,18 @@ export const Header = () => {
                 Feedbacks
               </Link>
               <div className='border-l-2 border-solid border-blue-300 h-6'></div>
+              {userRole === 'property_agent' && (
+                <>
+                  <Link to="/looker" className="text-white text-lg ml-3">
+                    AdminStats
+                  </Link>
+                  <div className='border-l-2 border-solid border-blue-300 h-6'></div>
+                  <Link to="/tickets" className="text-white text-lg ml-3">
+                    Tickets
+                  </Link>
+                  <div className='border-l-2 border-solid border-blue-300 h-6'></div>
+                </>
+              )}
               <div
                 onClick={logout}
                 className='text-lg text-white cursor-pointer hover:underline transform hover:scale-105 transition duration-200'
