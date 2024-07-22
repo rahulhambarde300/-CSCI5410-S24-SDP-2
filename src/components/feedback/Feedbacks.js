@@ -82,7 +82,7 @@ const Feedbacks = () => {
       <Table>
         <TableHead>
           <TableRow sx={{ backgroundColor: "#FAFAFA", fontSize: 14 }}>
-            <TableCell>Room Id</TableCell>
+            <TableCell>Room Name/Id</TableCell>
             <TableCell>User</TableCell>
             <TableCell>Feedback</TableCell>
             <TableCell>Sentiment</TableCell>
@@ -91,7 +91,7 @@ const Feedbacks = () => {
         <TableBody>
           {feedbacks.map((feedback) => (
             <TableRow key={`${feedback.roomId}-${feedback.userId}`}>
-              <TableCell>{feedback.roomId}</TableCell>
+              <TableCell>{feedback.roomName? feedback.roomName : feedback.roomId}</TableCell>
               <TableCell>{feedback?.userEmail || "N/A"}</TableCell>
               <TableCell>{feedback.message}</TableCell>
               <TableCell>

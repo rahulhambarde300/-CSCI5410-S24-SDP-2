@@ -77,8 +77,6 @@ const PriceWrapper = styled('div')({
 const API_GATEWAY_URL = "https://2zhi4uaze6.execute-api.us-east-1.amazonaws.com/prod";
 
 const ListingPage = ({ handleRoomSelect }) => {
-    const storedUser = localStorage.getItem('user');
-    const user = JSON.parse(storedUser);
     const [rooms, setRooms] = useState([]);
     const [bookings, setBookings] = useState([]);
     const navigate = useNavigate();
@@ -86,9 +84,17 @@ const ListingPage = ({ handleRoomSelect }) => {
     const [openDialog, setOpenDialog] = useState(false);
     const [deleteBookingId, setDeleteBookingId] = useState(null);
 
+    const storedUser = localStorage.getItem('user');
+    let user;
+    if(storedUser){
+      user = JSON.parse(storedUser);
+    }
+
     useEffect(() => {
         fetchRooms();
-        getBookings();
+        if(user){
+          getBookings();
+        }
     }, []);
 
     const selectRoom = (room) => {
@@ -147,7 +153,7 @@ const ListingPage = ({ handleRoomSelect }) => {
           console.log(error);
         });
       } catch (error) {
-        console.error('Error deleting room:', error);
+        console.error('Error deleting booking:', error);
       }
       setOpenDialog(false);
     };
@@ -172,7 +178,8 @@ const ListingPage = ({ handleRoomSelect }) => {
           </Grid>
         ))}
       </Grid>
-      <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', pt: '1em' }}>
+      { bookings?.length > 0 ?
+      (<><Typography variant="h4" gutterBottom sx={{ textAlign: 'center', pt: '1em' }}>
         Your Bookings
         <Divider sx={{ marginTop: 2 }} />
       </Typography>
@@ -198,7 +205,7 @@ const ListingPage = ({ handleRoomSelect }) => {
           </ListItem>
         ))}
       </List>
-      </div> 
+      </div></>) : (<></>)}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
