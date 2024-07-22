@@ -1,6 +1,6 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import { Grid, Typography, Card, CardMedia, Box, TextField, Button } from '@mui/material';
+import { Link, useParams } from 'react-router-dom';
+import { Grid, Typography, Card, CardMedia, Box, TextField, Button, colors } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import axios from 'axios';
@@ -13,23 +13,24 @@ const IndividualListingComponent = ({ room  }) => {
   const API_GATEWAY_URL = 'https://2zhi4uaze6.execute-api.us-east-1.amazonaws.com/prod/';
 
   const storedUser = localStorage.getItem('user');
-  const user = JSON.parse(storedUser);
+  let user;
+  if(storedUser){
+    user = JSON.parse(storedUser);
+  }
+  
   const { id } = useParams();
   const [checkInDate, setCheckInDate] = React.useState('');
   const [checkOutDate, setCheckOutDate] = React.useState('');
   const { enqueueSnackbar } = useSnackbar();
-  const dateOptions = { year: 'numeric', month: 'long', day: '2-digit' };
   const navigate = useNavigate();
 
   if (!room) {
-    return <div>Room not found</div>;
+    return (<Typography variant="h4" 
+                        color="textSecondary" 
+                        sx={{mt:'1em', mb:'0.5em', justifyContent:'center', textAlign: 'center'}}>
+                          Room not found
+                        </Typography>);
   }
-
-  const handleBookingSubmit = (e) => {
-    e.preventDefault();
-    console.log('Booking submitted:', { checkInDate, checkOutDate });
-    // Implement booking logic here (e.g., API call)
-  };
 
   const showMessage = (msg, variant) => {
     enqueueSnackbar(msg, { variant });
@@ -37,7 +38,7 @@ const IndividualListingComponent = ({ room  }) => {
 
   
   const handleBooking = () => {
-    if (checkInDate && checkOutDate) {
+    if (checkInDate && checkOutDate && user) {
       if(checkOutDate < checkInDate){
         showMessage("Check out date can't be before check in date", 'error');
       }
@@ -71,7 +72,7 @@ const IndividualListingComponent = ({ room  }) => {
       }
       
     } else {
-      showMessage("Please fill in all fields", 'error');
+      showMessage("Please login and fill in all fields", 'error');
     }
   };
 
@@ -97,25 +98,39 @@ const IndividualListingComponent = ({ room  }) => {
             <Typography variant="h4" color="textSecondary" sx={{mt:'0.25em', mb:'0.5em'}}>
               {room.description}
             </Typography>
-            <Box component="form" mt={2} display="flex" flexDirection="column" gap={2}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label="Check in date"
-                  value={checkInDate}
-                  onChange={(date)=>{setCheckInDate(date)}}
-                  />
-              </LocalizationProvider>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label="Check out date"
-                  value={checkOutDate}
-                  onChange={(date)=>{setCheckOutDate(date)}}
-                  />
-              </LocalizationProvider>
-              <Button variant="contained" color="primary" onClick={handleBooking}>
-                Book Now
-              </Button>
-            </Box>
+            { user ?
+              (<>
+                <Box component="form" mt={2} display="flex" flexDirection="column" gap={2}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                      label="Check in date"
+                      value={checkInDate}
+                      onChange={(date)=>{setCheckInDate(date)}}
+                      />
+                  </LocalizationProvider>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DatePicker
+                      label="Check out date"
+                      value={checkOutDate}
+                      onChange={(date)=>{setCheckOutDate(date)}}
+                      />
+                  </LocalizationProvider>
+                  <Button variant="contained" color="primary" onClick={handleBooking}>
+                    Book Now
+                  </Button>
+                </Box>
+              </>) :
+              (<>
+                <Typography variant="h4" 
+                    color="textSecondary" 
+                    sx={{mt:'1em', mb:'0.5em', justifyContent:'center', textAlign: 'center', color: "#2563EB"}}>
+                    <Link to="/login"
+                          sx={{}}>
+                        Login to book!
+                    </Link>
+                </Typography>
+                     
+              </>)}
           </Box>
         </Grid>
       </Grid>

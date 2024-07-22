@@ -14,13 +14,26 @@ import axios from 'axios';
 const ROOMS_BASE_API_URL = "https://2zhi4uaze6.execute-api.us-east-1.amazonaws.com/prod";
 
 const ManageRoom = () => {
-  const [rooms, setRooms] = useState([]);
-  const [selectedRoom, setSelectedRoom] = useState(null);
-  const [formValues, setFormValues] = useState({ name: '', description: '', image: '', price: '', discount: '' });
-  const [isEditing, setIsEditing] = useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [deleteRoomId, setDeleteRoomId] = useState(null);
-  const [errors, setErrors] = React.useState({});
+    const [rooms, setRooms] = useState([]);
+    const [selectedRoom, setSelectedRoom] = useState(null);
+    const [formValues, setFormValues] = useState({ name: '', description: '', image: '', price: '', discount: '' });
+    const [isEditing, setIsEditing] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [deleteRoomId, setDeleteRoomId] = useState(null);
+    const [errors, setErrors] = React.useState({});
+
+    const storedUser = localStorage.getItem('user');
+    let user;
+    if(storedUser){
+      user = JSON.parse(storedUser);
+    }
+
+    
+
+
+    useEffect(() => {
+      fetchRooms();
+    }, []);
 
    const fetchRooms = async () => {
     try {
@@ -39,9 +52,14 @@ const ManageRoom = () => {
     }
   };
 
-  useEffect(() => {
-    fetchRooms();
-  }, []);
+  
+  if(!user || user.user_role !== 'property_agent'){
+    return (<Typography variant="h4" 
+      color="textSecondary" 
+      sx={{mt:'1em', mb:'0.5em', justifyContent:'center', textAlign: 'center'}}>
+        You are not authorized to view this page!
+      </Typography>);
+  }
 
   const handleEditClick = (room) => {
     setSelectedRoom(room);
