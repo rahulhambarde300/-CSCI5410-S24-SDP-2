@@ -3,7 +3,7 @@ Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: sdp2-room-images-2
+      BucketName: sdp2-room-images
       OwnershipControls:
         Rules:
           - ObjectOwnership: ObjectWriter
