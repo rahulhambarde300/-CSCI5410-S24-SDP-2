@@ -23,7 +23,7 @@ export const handler = async(event) => {
     const currentDate = new Date();
     const message = `Hello User,
     
-    You have recently logged in to DalVacationHome at ${currentDate}.
+You have recently logged in to DalVacationHome at ${currentDate}.
     `;
     try{
 

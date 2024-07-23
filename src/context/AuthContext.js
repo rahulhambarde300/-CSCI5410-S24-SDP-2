@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useState } from 'react';
 import { CognitoUserPool, AuthenticationDetails, CognitoUser, CognitoUserAttribute } from 'amazon-cognito-identity-js';
 import axios from 'axios';
 import { clientId, userPoolId } from '../config';
-import { USER_SIGNUP, VERIFY_USER } from '../API_URL';
+import { USER_SIGNUP, VERIFY_USER, NOTIFICATIONS_API_URL } from '../API_URL';
 
 export const AuthContext = createContext();
 
@@ -121,6 +121,7 @@ export const AuthProvider = ({ children }) => {
 
         if (response.status === 200) {
           setSuccessMessage("User Registered Successfully");
+          sendRegistrationNotification({userId: userId, email: formData.email});
           setTimeout(() => {
             setSuccessMessage(false);
           }, 1000);
@@ -134,6 +135,11 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  const sendRegistrationNotification = async(currentUser) => {
+    const data = {userId: currentUser.userId, email: currentUser.email};
+    await axios.post(`${NOTIFICATIONS_API_URL}/registration`, data);
+  }
 
   const logout = () => {
     setUser(null);
