@@ -14,6 +14,7 @@ import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import {ROOMS_API_URL, BOOKING_API_URL} from '../../API_URL';
 
 const StyledDescription = styled('div')({
     opacity: 0,
@@ -74,8 +75,6 @@ const PriceWrapper = styled('div')({
 });
 
 
-const API_GATEWAY_URL = "https://2zhi4uaze6.execute-api.us-east-1.amazonaws.com/prod";
-
 const ListingPage = ({ handleRoomSelect }) => {
     const [rooms, setRooms] = useState([]);
     const [bookings, setBookings] = useState([]);
@@ -104,7 +103,7 @@ const ListingPage = ({ handleRoomSelect }) => {
 
     const fetchRooms = async () => {
       try {
-        const response = await axios.get(`${API_GATEWAY_URL}/rooms`);
+        const response = await axios.get(ROOMS_API_URL);
         const processedRooms = response.data.map(room => ({
           id: room.roomId.S,
           name: room.name.S,
@@ -122,7 +121,7 @@ const ListingPage = ({ handleRoomSelect }) => {
     const getBookings = () => {
       //Get all bookings from getAllBookings lambda function
       const userId = user.userId;
-      axios.post(`${API_GATEWAY_URL}/bookings/getBookings`, {
+      axios.post(`${BOOKING_API_URL}/getBookings`, {
         userId: userId
       })
       .then((response) => {
@@ -142,7 +141,7 @@ const ListingPage = ({ handleRoomSelect }) => {
       //Delete a booking using deleteBooking lambda function 
       try {
         const userId = user.userId;
-        axios.post(`${API_GATEWAY_URL}/bookings/deleteBooking`, {
+        axios.post(`${BOOKING_API_URL}/deleteBooking`, {
           userId: userId,
           bookingId: deleteBookingId
         })

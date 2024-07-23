@@ -16,9 +16,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import {ROOMS_API_URL, BOOKING_API_URL} from '../../API_URL';
 
 const RoomBooking = () => {
-  const API_GATEWAY_URL = 'https://2zhi4uaze6.execute-api.us-east-1.amazonaws.com/prod/';
 
   const storedUser = localStorage.getItem('user');
   const user = JSON.parse(storedUser);
@@ -45,7 +45,7 @@ const RoomBooking = () => {
   const getBookings = () => {
     //Get all bookings from getAllBookings lambda function
     const userId = user.userId;
-    axios.post(`${API_GATEWAY_URL}bookings/getBookings`, {
+    axios.post(`${BOOKING_API_URL}/getBookings`, {
       userId: userId
     })
     .then((response) => {
@@ -81,7 +81,7 @@ const RoomBooking = () => {
         }
 
         try {
-          axios.post(`${API_GATEWAY_URL}bookings/sendBooking`, message);
+          axios.post(`${BOOKING_API_URL}/sendBooking`, message);
           showMessage('Room booking queued! You will be notified soon.', 'success')
         } catch (error) {
           console.error('Error while booking room:', error);
@@ -97,7 +97,7 @@ const RoomBooking = () => {
   const deleteBooking = (bookingId) => {
     //Delete a booking using deleteBooking lambda function
     const userId = user.userId;
-    axios.post(`${API_GATEWAY_URL}bookings/deleteBooking`, {
+    axios.post(`${BOOKING_API_URL}/deleteBooking`, {
       userId: userId,
       bookingId: bookingId
     })

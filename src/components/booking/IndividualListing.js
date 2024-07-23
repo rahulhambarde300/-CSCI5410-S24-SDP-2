@@ -8,9 +8,9 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useNavigate } from 'react-router-dom';
+import {BOOKING_API_URL} from '../../API_URL';
 
 const IndividualListingComponent = ({ room  }) => {
-  const API_GATEWAY_URL = 'https://2zhi4uaze6.execute-api.us-east-1.amazonaws.com/prod/';
 
   const storedUser = localStorage.getItem('user');
   let user;
@@ -58,7 +58,7 @@ const IndividualListingComponent = ({ room  }) => {
         }
 
         try {
-          axios.post(`${API_GATEWAY_URL}bookings/sendBooking`, message);
+          axios.post(`${BOOKING_API_URL}/sendBooking`, message);
           showMessage('Room booking queued! You will be notified soon.', 'success')
           setTimeout(() => {
             navigate(`/listing/`);
