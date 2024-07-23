@@ -13,6 +13,7 @@ import {BOOKING_API_URL} from '../../API_URL';
 const IndividualListingComponent = ({ room  }) => {
 
   const storedUser = localStorage.getItem('user');
+  const storedRole = localStorage.getItem('userRole') || '';
   let user;
   if(storedUser){
     user = JSON.parse(storedUser);
@@ -76,6 +77,10 @@ const IndividualListingComponent = ({ room  }) => {
     }
   };
 
+  const handleEdit = () => {
+    navigate(`/manageRoom`);
+  }
+
   return (
     <Box p={2} height="90vh">
       <Grid container spacing={2} style={{ height: '100%' }}>
@@ -99,6 +104,8 @@ const IndividualListingComponent = ({ room  }) => {
               {room.description}
             </Typography>
             { user ?
+              (
+                storedRole === 'user' ?
               (<>
                 <Box component="form" mt={2} display="flex" flexDirection="column" gap={2}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -119,7 +126,14 @@ const IndividualListingComponent = ({ room  }) => {
                     Book Now
                   </Button>
                 </Box>
-              </>) :
+              </>):(
+                <>
+                  <Button variant="contained" color="primary" onClick={handleEdit}>
+                    Edit rooms
+                  </Button>
+                </>
+                )
+              ) :
               (<>
                 <Typography variant="h4" 
                     color="textSecondary" 

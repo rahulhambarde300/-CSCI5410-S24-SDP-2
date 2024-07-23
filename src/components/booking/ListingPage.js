@@ -84,6 +84,7 @@ const ListingPage = ({ handleRoomSelect }) => {
     const [deleteBookingId, setDeleteBookingId] = useState(null);
 
     const storedUser = localStorage.getItem('user');
+    const storedRole = localStorage.getItem('userRole') || '';
     let user;
     if(storedUser){
       user = JSON.parse(storedUser);
@@ -177,7 +178,7 @@ const ListingPage = ({ handleRoomSelect }) => {
           </Grid>
         ))}
       </Grid>
-      { bookings?.length > 0 ?
+      { storedRole==='user' && bookings?.length > 0 ?
       (<><Typography variant="h4" gutterBottom sx={{ textAlign: 'center', pt: '1em' }}>
         Your Bookings
         <Divider sx={{ marginTop: 2 }} />
