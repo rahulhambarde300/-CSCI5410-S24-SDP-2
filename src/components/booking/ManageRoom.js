@@ -9,9 +9,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-
-
-const ROOMS_BASE_API_URL = "https://2zhi4uaze6.execute-api.us-east-1.amazonaws.com/prod";
+import {ROOMS_API_URL} from '../../API_URL';
 
 const ManageRoom = () => {
     const [rooms, setRooms] = useState([]);
@@ -35,7 +33,7 @@ const ManageRoom = () => {
 
    const fetchRooms = async () => {
     try {
-      const response = await axios.get(`${ROOMS_BASE_API_URL}/rooms`);
+      const response = await axios.get(ROOMS_API_URL);
       const processedRooms = response.data.map(room => ({
         id: room.roomId.S,
         name: room.name.S,
@@ -72,7 +70,7 @@ const ManageRoom = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      await axios.delete(`${ROOMS_BASE_API_URL}/rooms?roomId=${deleteRoomId}`);
+      await axios.delete(`${ROOMS_API_URL}?roomId=${deleteRoomId}`);
       setRooms(rooms.filter(room => room.id !== deleteRoomId));
     } catch (error) {
       console.error('Error deleting room:', error);
@@ -102,7 +100,7 @@ const ManageRoom = () => {
           bucketName: "sdp2-room-images",
           key: `room/${roomId}.${fileType}`
         };
-        axios.post(`${ROOMS_BASE_API_URL}/rooms/image`, data)
+        axios.post(`${ROOMS_API_URL}/image`, data)
           .then(response => {
             resolve(response.data.url);
           })
@@ -141,10 +139,10 @@ const ManageRoom = () => {
       
       if(isEditing){
         formDetails = {...formDetails, roomId: selectedRoom.id};
-        await axios.put(`${ROOMS_BASE_API_URL}/rooms`, formDetails);
+        await axios.put(ROOMS_API_URL, formDetails);
       }
       else{
-        await axios.post(`${ROOMS_BASE_API_URL}/rooms`, formDetails);
+        await axios.post(ROOMS_API_URL, formDetails);
       }
       fetchRooms();
       setFormValues({

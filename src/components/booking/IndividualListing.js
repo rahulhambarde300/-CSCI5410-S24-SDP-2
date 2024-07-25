@@ -8,11 +8,12 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useNavigate } from 'react-router-dom';
+import {BOOKING_API_URL} from '../../API_URL';
 
 const IndividualListingComponent = ({ room  }) => {
-  const API_GATEWAY_URL = 'https://2zhi4uaze6.execute-api.us-east-1.amazonaws.com/prod/';
 
   const storedUser = localStorage.getItem('user');
+  const storedRole = localStorage.getItem('userRole') || '';
   let user;
   if(storedUser){
     user = JSON.parse(storedUser);
@@ -58,7 +59,7 @@ const IndividualListingComponent = ({ room  }) => {
         }
 
         try {
-          axios.post(`${API_GATEWAY_URL}bookings/sendBooking`, message);
+          axios.post(`${BOOKING_API_URL}/sendBooking`, message);
           showMessage('Room booking queued! You will be notified soon.', 'success')
           setTimeout(() => {
             navigate(`/listing/`);
@@ -75,6 +76,10 @@ const IndividualListingComponent = ({ room  }) => {
       showMessage("Please login and fill in all fields", 'error');
     }
   };
+
+  const handleEdit = () => {
+    navigate(`/manageRoom`);
+  }
 
   return (
     <Box p={2} height="90vh">
@@ -99,6 +104,8 @@ const IndividualListingComponent = ({ room  }) => {
               {room.description}
             </Typography>
             { user ?
+              (
+                storedRole === 'user' ?
               (<>
                 <Box component="form" mt={2} display="flex" flexDirection="column" gap={2}>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -119,7 +126,14 @@ const IndividualListingComponent = ({ room  }) => {
                     Book Now
                   </Button>
                 </Box>
-              </>) :
+              </>):(
+                <>
+                  <Button variant="contained" color="primary" onClick={handleEdit}>
+                    Edit rooms
+                  </Button>
+                </>
+                )
+              ) :
               (<>
                 <Typography variant="h4" 
                     color="textSecondary" 

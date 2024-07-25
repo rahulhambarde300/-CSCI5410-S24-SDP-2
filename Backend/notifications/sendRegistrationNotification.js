@@ -3,12 +3,13 @@ import { SNSClient, PublishCommand, SubscribeCommand  } from "@aws-sdk/client-sn
 const sns = new SNSClient({ region: "us-east-1" });
 
 const topicArn = 'arn:aws:sns:us-east-1:960148008907:Registration';
+const bookingTopicArn = 'arn:aws:sns:us-east-1:960148008907:Booking';
 const loginTopicArn = 'arn:aws:sns:us-east-1:960148008907:Login';
 
 export const handler = async(event) => {
-    const {userId, userName, email} = JSON.parse(event.body);
+    const {userId, email} = JSON.parse(event.body);
 
-    if(!userId || !userName || !email){
+    if(!userId || !email){
         return {
             statusCode: 400,
             headers: {
@@ -32,6 +33,15 @@ export const handler = async(event) => {
         }
     };
 
+    const bookingSubscribeParams = {
+        TopicArn: bookingTopicArn,
+        Protocol: 'email',
+        Endpoint: email,
+        Attributes: {
+          'FilterPolicy': JSON.stringify(filterPolicy)
+        }
+    };
+
     const loginSubscribeParams = {
         TopicArn: loginTopicArn,
         Protocol: 'email',
@@ -42,7 +52,7 @@ export const handler = async(event) => {
     };
 
     const subject = "Welcome to DalVacationHome!";
-    const message = `Hi ${userName},
+    const message = `Hello User,
     
     We're excited to have you join us at DalVacationHome!
     Your registration was successful, and you’re now part of our community. Here’s what you can do next:
@@ -58,9 +68,11 @@ export const handler = async(event) => {
     try{
         const registrationSubscribeCommand = new SubscribeCommand(registrationSubscribeParams);
         const loginSubscribeCommand = new SubscribeCommand(loginSubscribeParams);
+        const bookingSubscribeCommand = new SubscribeCommand(bookingSubscribeParams);
         //TODO: Uncomment this if you need to subscribe new emails for registration from code
-        //await sns.send(subscribeCommand);
+        //await sns.send(registrationSubscribeCommand);
         await sns.send(loginSubscribeCommand);
+        await sns.send(bookingSubscribeCommand);
 
         await sns.send(new PublishCommand({
             Message: message,
