@@ -14,7 +14,7 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'DalVacationHome'
+      - 'dal-vacation-home'
       - '--image'
       - 'gcr.io/$PROJECT_ID/dal-vac-repo:$COMMIT_SHA'
       - '--region'
