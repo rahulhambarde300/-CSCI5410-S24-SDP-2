@@ -27,4 +27,4 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 images:
-  - 'gcr.io/$PROJECT_ID/$REPO_NAME/$SERVICE_NAME:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/$REPO_NAME/dal-vacation-home:$COMMIT_SHA'
