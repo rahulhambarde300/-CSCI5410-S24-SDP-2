@@ -22,7 +22,8 @@ steps:
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
-      - '--memory 4Gi'
+      - '--memory'
+      - '4Gi'
 
 options:
   logging: CLOUD_LOGGING_ONLY
