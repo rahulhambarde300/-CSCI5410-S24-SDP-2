@@ -6,10 +6,10 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-RUN npm run build
+# RUN npm run build
 EXPOSE 8080
 
-CMD ["npm", "start"]
+CMD ["node", "--max-old-space-size=2048", "node_modules/react-scripts/scripts/start.js"]
 
 
 # FROM nginx:1.19.0
