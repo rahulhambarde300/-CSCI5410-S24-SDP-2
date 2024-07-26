@@ -65,9 +65,7 @@ const Feedbacks = () => {
     return "Bad";
   };
 
-  const handleAddFeedback = () => {
-    navigate("/feedback/add");
-  };
+  
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
@@ -75,9 +73,7 @@ const Feedbacks = () => {
         <Typography variant="h4" component="h1" gutterBottom>
           Feedbacks
         </Typography>
-        <Button variant="contained" color="primary" onClick={handleAddFeedback}>
-          Add Feedback
-        </Button>
+       
       </Box>
       <Table>
         <TableHead>

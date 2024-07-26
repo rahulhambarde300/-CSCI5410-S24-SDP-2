@@ -1,7 +1,8 @@
 import json
 import boto3
+import os
 
-user_pool_id = 'us-east-1_PpZiaKLpu'
+user_pool_id = os.environ.get('USERPOOL_ID')
 
 def lambda_handler(event, context):
     print("Event", event)
