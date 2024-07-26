@@ -1,0 +1,391 @@
+  Resources:
+    ChatBotRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument: 
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal: 
+                Service:
+                  - "lambda.amazonaws.com"
+              Action: "sts:AssumeRole"
+        Description: "IAM Role for Lambda Function giving access to Lex Service"
+        Policies: 
+          - PolicyName: "LambdaFunctionLexAccess"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action: "lex:*"
+                  Resource: "*" 
+    AddTransactionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - "lambda.amazonaws.com"
+                  - "lex.amazonaws.com"
+              Action: "sts:AssumeRole"
+        Description: "IAM Role for Lambda Function giving access to Lex for Calling on Intents"
+        
+    ChatBotLambdaFunctionPermission:
+      Type: "AWS::Lambda::Permission"
+      Properties:
+        FunctionName: !Ref ChatBotLambda
+        Action: "lambda:InvokeFunction"
+        Principal: "apigateway.amazonaws.com"
+        SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ChatBotAPIGatewayRestAPI}/Development/POST/send"        
+    LexInvokeLambdaPermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName: !Ref GetBookingDetails
+        Action: "lambda:InvokeFunction"
+        Principal: lex.amazonaws.com
+        SourceArn: !GetAtt LexChatBotAlias.Arn
+    ChatBotAPIGatewayRestAPI:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Description: "Rest Api for sending message from Front-End to ChatBot-Lambda"
+        Name: "LexBotIntegration"
+        EndpointConfiguration:
+          Types:
+            - REGIONAL
+    ChatBotAPIGatewayResource:
+      Type: AWS::ApiGateway::Resource
+      Properties:
+        ParentId: !GetAtt
+          - "ChatBotAPIGatewayRestAPI"
+          - "RootResourceId"
+        PathPart: send
+        RestApiId: !Ref ChatBotAPIGatewayRestAPI
+    ChatBotAPIGatewayMethod:
+      Type: AWS::ApiGateway::Method
+      Properties:
+        HttpMethod: POST
+        ResourceId: !Ref ChatBotAPIGatewayResource
+        RestApiId: !Ref ChatBotAPIGatewayRestAPI
+        AuthorizationType: NONE
+        Integration:
+          Type: AWS
+          IntegrationHttpMethod: POST
+          Uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ChatBotLambda.Arn}/invocations
+          PassthroughBehavior: WHEN_NO_MATCH
+          IntegrationResponses:
+            - StatusCode: 200
+              ResponseParameters:
+                method.response.header.Access-Control-Allow-Origin: "'*'"
+              ResponseTemplates:
+                application/json: ""
+        MethodResponses:
+            - StatusCode: 200
+              ResponseModels:
+                application/json: "Empty"
+              ResponseParameters:
+                  "method.response.header.Access-Control-Allow-Origin": true
+    ApiGatewayOPTIONSMethod:
+      Type: AWS::ApiGateway::Method
+      Properties:
+        RestApiId: !Ref ChatBotAPIGatewayRestAPI
+        ResourceId: !Ref ChatBotAPIGatewayResource
+        HttpMethod: 'OPTIONS'
+        AuthorizationType: 'NONE'
+        Integration:
+          Type: MOCK
+          IntegrationResponses:
+            - StatusCode: 200
+              ResponseParameters:
+                method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+                method.response.header.Access-Control-Allow-Origin: "'*'"
+          PassthroughBehavior: WHEN_NO_MATCH    
+          RequestTemplates:
+            application/json: '{"statusCode":200}'   
+        MethodResponses:
+          - StatusCode: 200
+            ResponseModels:
+              application/json: "Empty"
+            ResponseParameters:
+              "method.response.header.Access-Control-Allow-Headers": true
+              "method.response.header.Access-Control-Allow-Methods": true
+              "method.response.header.Access-Control-Allow-Origin": true
+    ChatBotAPIGatewayDeployment:
+      Type: AWS::ApiGateway::Deployment
+      DependsOn: ChatBotAPIGatewayMethod
+      Properties:
+        RestApiId: !Ref ChatBotAPIGatewayRestAPI
+        Description: "Deployment for the ChatBotAPIGatewayRestAPI"
+    ChatBotAPIGatewayStage:
+      Type: AWS::ApiGateway::Stage
+      Properties:
+        DeploymentId: !Ref ChatBotAPIGatewayDeployment
+        Description: "Development Stage for my ChatBot API"
+        RestApiId: !Ref ChatBotAPIGatewayRestAPI
+        StageName: Development
+    ChatBotLambda:
+      Type: AWS::Lambda::Function
+      Properties:
+        Architectures: 
+          - "x86_64"
+        Code: 
+          ZipFile: |
+            import boto3
+            import json
+            def lambda_handler(event, context):
+                print("Received event: " + json.dumps(event, indent=2))
+                user_message =  event['text']
+                user_id = event['user']
+                lex_client = boto3.client("lexv2-runtime")
+                response = lex_client.recognize_text(
+                    botId='QRL4TJLTIZ',
+                    botAliasId='WMG9SGVZTU',
+                    localeId='en_US',
+                    sessionId=user_id,
+                    text=user_message
+                )
+              if 'messages' in response:
+                messages = response['messages']
+                if messages:
+                  return {
+                    "statusCode": 200,
+                    "body": messages[0]['content']
+                  }
+              return {
+                  "statusCode": 200,
+                  "body": "I am sorry, I don't understand. Can you please tell me again?"
+              }
+                Description: "Lambda Function for the ChatBot Interaction"
+                FunctionName: "ChatBot"
+                Role: !GetAtt ChatBotRole.Arn
+                Runtime: "python3.12"
+                Handler: "index.lambda_handler"
+                Timeout: 10
+    GetBookingDetailsLambda:
+      Type: AWS::Lambda::Function
+      Properties:
+        Architectures:
+          - "x86_64"
+        Code:
+          ZipFile: |
+            import json
+            import urllib.request
+            from datetime import datetime
+            def format_date(date_str):
+                date_obj = datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+                return date_obj.strftime('%d-%b-%Y')
+            def calculate_days(start_date_str, end_date_str):
+                start_date = datetime.strptime(start_date_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+                end_date = datetime.strptime(end_date_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+                return (end_date - start_date).days
+            def handle_booking_details_intent(slots, session_id):
+                booking_id = slots['BookingId']['value']['interpretedValue']
+                booking_id = booking_id.upper()
+                if session_id == "Guest":
+                    return {
+                        "messages": [
+                            {
+                                "content": "Please login before fetching details.",
+                                "contentType": "PlainText"
+                            }
+                        ],
+                        "sessionState": {
+                            "dialogAction": {
+                                "type": "Close",
+                                "fulfillmentState": "Failed",
+                                "message": {
+                                    "contentType": "PlainText",
+                                    "content": "Please login before fetching details."
+                                }
+                            },
+                            "intent": {
+                                "name": "BookingDetailsIntent",
+                                "state": "Failed"
+                            }
+                        }
+                    }
+                api_endpoint = f'https://2zhi4uaze6.execute-api.us-east-1.amazonaws.com/prod/bookings/getBookingDetails?bookingId={booking_id}'
+                try:
+                    with urllib.request.urlopen(api_endpoint) as url:
+                        data = json.loads(url.read().decode())
+                        booking_details = data.get('details')
+                    start_date_formatted = format_date(booking_details.get('startDate'))
+                    end_date_formatted = format_date(booking_details.get('endDate'))
+                    num_days = calculate_days(booking_details.get('startDate'), booking_details.get('endDate'))
+                    message = f"Booking details for booking ID {booking_id}:\n"
+                    message += f"Room ID: {booking_details.get('roomId', 'N/A')}\n"
+                    message += f"Start Date: {start_date_formatted}\n"
+                    message += f"End Date: {end_date_formatted}\n"
+                    message += f"Number of Days: {num_days}\n"
+                    return {
+                        "messages": [
+                            {
+                                "content": message,
+                                "contentType": "PlainText"
+                            }
+                        ],
+                        "sessionState": {
+                            "dialogAction": {
+                                "type": "Close",
+                                "fulfillmentState": "Fulfilled",
+                                "message": {
+                                    "contentType": "PlainText",
+                                    "content": message
+                                }
+                            },
+                            "intent": {
+                                "name": "BookingDetailsIntent",
+                                "state": "Fulfilled"
+                            }
+                        }
+                    }
+                except Exception as e:
+                    error_message = f"Error: {str(e)}"
+                    print(error_message)
+                    
+                    return {
+                        "messages": [
+                            {
+                                "content": "Booking Not Found",
+                                "contentType": "PlainText"
+                            }
+                        ],
+                        "sessionState": {
+                            "dialogAction": {
+                                "type": "Close",
+                                "fulfillmentState": "Failed",
+                                "message": {
+                                    "contentType": "PlainText",
+                                    "content": "Booking Not Found"
+                                }
+                            },
+                            "intent": {
+                                "name": "BookingDetailsIntent",
+                                "state": "Failed"
+                            }
+                        }
+                    }
+            def handle_customer_concern_intent(slots, session_id):
+                booking_id = slots['BookingId']['value']['interpretedValue']
+                concern = slots['Concern']['value']['interpretedValue']
+                
+                payload = {
+                    "customer_id": session_id,
+                    "concern": concern,
+                    "booking_reference": booking_id,
+                    "ticket_id": "TICKET001"
+                }
+
+                api_url = "https://us-central1-csci5410-427115.cloudfunctions.net/publishCustomerConcern"
+                headers = {'Content-Type': 'application/json'}
+
+                try:
+                    data = json.dumps(payload).encode('utf-8')
+                    req = urllib.request.Request(api_url, data=data, headers=headers)
+                    with urllib.request.urlopen(req) as response:
+                        if response.status == 200:
+                            message = "Your concern has been successfully recorded. We will address it shortly."
+                            fulfillment_state = "Fulfilled"
+                        else:
+                            message = "There was an error recording your concern. Please try again later."
+                            fulfillment_state = "Failed"
+                except Exception as e:
+                    message = "There was an error recording your concern. Please try again later."
+                    fulfillment_state = "Failed"
+                    print(f"Error: {str(e)}")
+
+                return {
+                    "messages": [
+                        {
+                            "content": message,
+                            "contentType": "PlainText"
+                        }
+                    ],
+                    "sessionState": {
+                        "dialogAction": {
+                            "type": "Close",
+                            "fulfillmentState": fulfillment_state,
+                            "message": {
+                                "contentType": "PlainText",
+                                "content": message
+                            }
+                        },
+                        "intent": {
+                            "name": "CustomerConcernIntent",
+                            "state": fulfillment_state
+                        }
+                    }
+                }
+
+            def lambda_handler(event, context):
+                print("Event received:", json.dumps(event))
+                intent_name = event['interpretations'][0]['intent']['name']
+                slots = event['interpretations'][0]['intent']['slots']
+                session_id = event['sessionId']
+
+                if intent_name == "BookingDetailsIntent":
+                    return handle_booking_details_intent(slots, session_id)
+                elif intent_name == "CustomerConcernIntent":
+                    return handle_customer_concern_intent(slots, session_id)
+                else:
+                    return {
+                        "messages": [
+                            {
+                                "content": "Sorry, I didn't understand that.",
+                                "contentType": "PlainText"
+                            }
+                        ],
+                        "sessionState": {
+                            "dialogAction": {
+                                "type": "Close",
+                                "fulfillmentState": "Failed",
+                                "message": {
+                                    "contentType": "PlainText",
+                                    "content": "Sorry, I didn't understand that."
+                                }
+                            },
+                            "intent": {
+                                "name": intent_name,
+                                "state": "Failed"
+                            }
+                        }
+                    
+            }
+      Description: "Lambda Function for Retrieving Booking Details and Forwarding Concerns to the Agent"
+      FunctionName: "AddTransaction"
+      Role: !GetAtt GetBookingDetailsRole.Arn
+      Runtime: "python3.12"
+      Handler: "index.lambda_handler"
+      Timeout: 10 
+    LexBotRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                Service:
+                  - "lex.amazonaws.com"
+              Action:
+                - "sts:AssumeRole"
+        Policies:
+          - PolicyName: "LexBotPolicy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "logs:CreateLogGroup"
+                    - "logs:CreateLogStream"
+                    - "logs:PutLogEvents"
+                  Resource: "*"
+                - Effect: "Allow"
+                  Action:
+                    - "lambda:InvokeFunction"
+                  Resource: 
+                    - !GetAtt GetBookingDetailsLambda.Arn
+      
