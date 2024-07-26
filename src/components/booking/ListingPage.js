@@ -2,7 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import {
   Container, Typography, TextField, Button, Grid, Paper, List, ListItem,
   ListItemText, ListItemAvatar, Avatar, IconButton, Dialog, DialogActions, DialogContent, DialogTitle,
-  Box, Divider, InputLabel
+  Box, Divider, InputLabel,
+  Link
 } from '@mui/material';
 import ImageIcon from '@mui/icons-material/Image';
 import EditIcon from '@mui/icons-material/Edit';
@@ -179,10 +180,25 @@ const ListingPage = ({ handleRoomSelect }) => {
         ))}
       </Grid>
       { storedRole==='user' && bookings?.length > 0 ?
-      (<><Typography variant="h4" gutterBottom sx={{ textAlign: 'center', pt: '1em' }}>
-        Your Bookings
-        <Divider sx={{ marginTop: 2 }} />
-      </Typography>
+      (<>
+        <div>
+            <Typography 
+              variant="h4" 
+              gutterBottom 
+              sx={{ textAlign: 'center', pt: 4 }}
+            >
+              Your Bookings
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate('/feedback/add')}
+              sx={{ display: 'block', mx: 'auto'}}
+            >
+              Add Feedback
+            </Button>
+            <Divider sx={{ mt: 2 }} />
+        </div>
       <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>     
       <List sx={{ flexGrow: 1, overflowY: 'auto', maxHeight: 'calc(100vh - 160px)', maxWidth: '600px', width: '100%' }}>
         {bookings?.map((booking) => (
