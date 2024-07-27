@@ -29,6 +29,15 @@ export const Header = () => {
               <FaHotel className="w-8 h-8 mr-2 text-white" />
               <p className='text-2xl font-bold'>DalVacationHome</p>
             </div>
+            {isAuthCompleted ? (<>
+              <Link to="/" className="text-white text-lg ml-3">
+                
+              Home
+            </Link>
+            <div className='border-l-2 border-solid border-blue-300 h-6'></div>
+
+            </>
+            ):<></>}
           {/* </Link> */}
          
                
