@@ -10,14 +10,14 @@ import {
   CardContent,
 } from "@mui/material";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom"; 
 
 const ChatBot = () => {
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState([]);
   const [userId, setUserId] = useState("Guest");
   const chatContentRef = useRef(null);
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -61,7 +61,7 @@ const ChatBot = () => {
   }, [chat]);
 
   const handleTalkToAgent = () => {
-    navigate("/livechat"); // Redirect to the new page
+    navigate("/livechat"); 
   };
 
   const chatMessages = chat.map((item, index) => {
