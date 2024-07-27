@@ -1,4 +1,4 @@
-import React, {  useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -10,13 +10,15 @@ import {
   CardContent,
 } from "@mui/material";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const ChatBot = () => {
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState([]);
   const [userId, setUserId] = useState("Guest");
   const chatContentRef = useRef(null);
+  const navigate = useNavigate(); // Initialize navigate
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const user = JSON.parse(storedUser);
@@ -24,15 +26,19 @@ const ChatBot = () => {
       setUserId(user.userId);
     }
   }, []);
+
   const sendMessage = async () => {
     if (message.trim() !== "") {
       const updatedChat = [...chat, { user: true, text: message }];
       setChat(updatedChat);
       try {
-        const response = await axios.post(`https://qvtmdb2uy4.execute-api.us-east-1.amazonaws.com/Development/send`, {
-          text: message,
-          user: userId
-        });
+        const response = await axios.post(
+          `https://qvtmdb2uy4.execute-api.us-east-1.amazonaws.com/Development/send`,
+          {
+            text: message,
+            user: userId
+          }
+        );
         setChat([...updatedChat, { user: false, text: response.data.body }]);
       } catch (error) {
         console.error("Error:", error);
@@ -44,7 +50,6 @@ const ChatBot = () => {
           },
         ]);
       }
-
       setMessage("");
     } else {
       toast.error("Please type your request before hitting send.");
@@ -54,6 +59,10 @@ const ChatBot = () => {
   useEffect(() => {
     chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
   }, [chat]);
+
+  const handleTalkToAgent = () => {
+    navigate("/livechat"); // Redirect to the new page
+  };
 
   const chatMessages = chat.map((item, index) => {
     if (item && typeof item === "object" && "user" in item) {
@@ -102,7 +111,7 @@ const ChatBot = () => {
         variant="h4"
         style={{ textAlign: "center", paddingTop: "2%" }}
       >
-        DalVacationHome Chatbot 
+        DalVacationHome Chatbot
       </Typography>
       <Card
         variant="outlined"
@@ -144,6 +153,13 @@ const ChatBot = () => {
             style={{ marginLeft: "8px" }}
           >
             Send
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleTalkToAgent}
+            style={{ marginLeft: "8px", backgroundColor: "#ff5722" , fontSize: "0.45rem"}}
+          >
+            Talk to Agent
           </Button>
         </div>
       </Card>
